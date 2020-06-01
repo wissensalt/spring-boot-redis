@@ -13,6 +13,8 @@ server :
 # SPRING
 #============================================================================
 spring:
+  cache:
+    type : redis
   redis:
 #    cluster:
   #    max-redirects: # Maximum number of redirects to follow when executing commands across the cluster.
@@ -60,7 +62,7 @@ db:
   host : localhost
   port : 3306
   username : root
-  password : P@ssw0rd
+  password : password
   auto-reconnect : true
   ssl : false
 
@@ -77,4 +79,4 @@ logging:
 #============================================================================
 log :
   file :
-    path : /home/fauzi/RND/REDIS/sb-redis.log
+    path : /users/moka/log/sb-redis.log

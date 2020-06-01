@@ -5,8 +5,10 @@ import com.zisal.rnd.springbootredis.data.dto.EmployeeDTO;
 import com.zisal.rnd.springbootredis.data.model.Employee;
 import com.zisal.rnd.springbootredis.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +31,16 @@ public class EmployeeEndPoint {
         return employeeService.findAll();
     }
 
+    @Cacheable(value = "employees")
     @GetMapping("/findAllRedis")
     public List<EmployeeDTO> findAllRedis() {
-        return employeeService.findAllRedis();
+        List<Employee> employees = employeeService.findAll();
+        System.out.println("Call From DB");
+        List<EmployeeDTO> em = new ArrayList<>();
+        for (Employee employee : employees) {
+            em.add(employeeConverter.convertModelToDTO(employee));
+        }
+        return em;
     }
 
     @PostMapping("/insert")
