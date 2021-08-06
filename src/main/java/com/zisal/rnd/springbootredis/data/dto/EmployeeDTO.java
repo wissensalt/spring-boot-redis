@@ -25,4 +25,15 @@ public class EmployeeDTO implements Serializable {
     private String name;
     private String remarks;
     private Boolean status;
+
+    @Override
+    public String toString() {
+        return "EmployeeDTO{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

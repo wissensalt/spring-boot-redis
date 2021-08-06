@@ -5,8 +5,16 @@ import com.zisal.rnd.springbootredis.data.dto.EmployeeDTO;
 import com.zisal.rnd.springbootredis.data.model.Employee;
 import com.zisal.rnd.springbootredis.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +39,9 @@ public class EmployeeEndPoint {
         return employeeService.findAll();
     }
 
-    @Cacheable(value = "employees")
-    @GetMapping("/findAllRedis")
-    public List<EmployeeDTO> findAllRedis() {
+    @GetMapping("/findall")
+    public List<EmployeeDTO> findAll() {
         List<Employee> employees = employeeService.findAll();
-        System.out.println("Call From DB");
         List<EmployeeDTO> em = new ArrayList<>();
         for (Employee employee : employees) {
             em.add(employeeConverter.convertModelToDTO(employee));
@@ -44,15 +50,20 @@ public class EmployeeEndPoint {
     }
 
     @PostMapping("/insert")
-    public Integer insert(@RequestBody EmployeeDTO employeeDTO) {
+    public EmployeeDTO insert(@RequestBody EmployeeDTO employeeDTO) {
         Employee employee = employeeConverter.convertDTOToModel(employeeDTO);
-        employeeService.insert(employee);
-        return 1;
+        return employeeService.insert(employee);
     }
 
+    @Cacheable(value = "employee", key = "#id")
+    @GetMapping("/{id}")
+    public EmployeeDTO findById(@PathVariable("id") Integer id) {
+        return employeeService.findById(id);
+    }
+
+    @CacheEvict(value = "employee", allEntries=true)
     @DeleteMapping("/delete/{id}")
-    public Integer delete(@RequestParam("id") Integer id) {
+    public void delete(@RequestParam("id") Integer id) {
         employeeService.delete(id);
-        return 1;
     }
 }

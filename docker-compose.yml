@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sbr-api
+    ports:
+      - 8080:8080
+    networks:
+      - sbr-network
+    depends_on:
+      - sbr-mysql
+      - sbr-redis
+  sbr-redis:
+    image: redis:alpine3.14
+    container_name: sbr-redis
+    networks:
+      - sbr-network
+    ports:
+      - 6379:6379
+  sbr-mysql:
+    image: mysql:5.7
+    container_name: sbr-mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    networks:
+      - sbr-network
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sbr
+      MYSQL_USER: sbr
+      MYSQL_PASSWORD: password
+networks:
+  sbr-network:
+    driver: bridge
+volumes:
+  db_data: {}

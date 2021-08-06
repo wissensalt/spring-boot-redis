@@ -5,6 +5,7 @@ import com.zisal.rnd.springbootredis.dao.entity.IEmployeeDAO;
 import com.zisal.rnd.springbootredis.dao.redis.IEmployeeRedisDAO;
 import com.zisal.rnd.springbootredis.data.dto.EmployeeDTO;
 import com.zisal.rnd.springbootredis.data.model.Employee;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,27 +17,27 @@ import java.util.List;
  *
  * @author <a href="mailto:fauzi.knightmaster.achmad@gmail.com">Achmad Fauzi</a>
  */
+@Slf4j
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
+
     @Autowired
     private IEmployeeDAO employeeDAO;
-
 
     @Autowired
     private EmployeeConverter employeeConverter;
 
     @Autowired
-    private IEmployeeRedisDAO IEmployeeRedisDAO;
+    private IEmployeeRedisDAO employeeRedisDAO;
 
     @Override
-    public int insert(Employee employee) {
+    public EmployeeDTO insert(Employee employee) {
         employeeDAO.save(employee);
-        IEmployeeRedisDAO.save(employeeConverter.convertModelToDTO(employee));
-        return 1;
+        return employeeRedisDAO.save(employeeConverter.convertModelToDTO(employee));
     }
 
     @Override
-    public int update(Employee employee, Integer id) {
+    public EmployeeDTO update(Employee employee, Integer id) {
         Employee e = employeeDAO.findById(id).get();
         e.setCode(employee.getCode());
         e.setName(employee.getName());
@@ -46,18 +47,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         EmployeeDTO tempDTO = employeeConverter.convertModelToDTO(e);
 
-        EmployeeDTO employeeDTO = IEmployeeRedisDAO.findById(id).get();
+        EmployeeDTO employeeDTO = employeeRedisDAO.findById(id).get();
         tempDTO.setId(employeeDTO.getId());
-        IEmployeeRedisDAO.save(employeeDTO);
-        return 1;
+
+        return employeeRedisDAO.save(employeeDTO);
     }
 
     @Override
-    public int delete(Integer id) {
+    public void delete(Integer id) {
         employeeDAO.deleteById(id);
 
-        IEmployeeRedisDAO.deleteById(id);
-        return 1;
+        employeeRedisDAO.deleteById(id);
     }
 
     @Override
@@ -66,9 +66,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
+    public EmployeeDTO findById(Integer id) {
+        log.info("retrieve from DB");
+        return employeeConverter.convertModelToDTO(employeeDAO.findById(id).get());
+    }
+
+    @Override
     public List<EmployeeDTO> findAllRedis() {
         List<EmployeeDTO> employeeDTOs = new ArrayList<>();
-        IEmployeeRedisDAO.findAll().forEach(employeeDTOs::add);
+        employeeRedisDAO.findAll().forEach(employeeDTOs::add);
+
         return employeeDTOs;
     }
 }

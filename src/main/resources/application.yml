@@ -3,12 +3,6 @@
 #============================================================================
 server :
   port : 8080
-  servlet :
-    context-path : /sb-redis
-    servlet-path : /*
-  devtools :
-    restart :
-      enabled : true
 #============================================================================
 # SPRING
 #============================================================================
@@ -21,7 +15,7 @@ spring:
   #  cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
     database: 2 # Database index used by the connection factory.
   #  url= # Connection URL. Overrides host, port, and password. User is ignored. Example: redis://user:password@example.com:6379
-    host: localhost # Redis server host.
+    host: sbr-redis # Redis server host.
     port : 6379
     password :
 #    sentinel :
@@ -54,14 +48,17 @@ spring:
       dialect : org.hibernate.dialect.MySQL5Dialect
       ddl-auto : validate     # Hibernate ddl auto (create, create-drop, validate, update)
 
+  flyway:
+    enabled: true
+
 #============================================================================
 # DATABASE
 #============================================================================
 db:
-  name : sb_redis
-  host : localhost
+  name : sbr
+  host : sbr-mysql
   port : 3306
-  username : root
+  username : sbr
   password : password
   auto-reconnect : true
   ssl : false
@@ -79,4 +76,4 @@ logging:
 #============================================================================
 log :
   file :
-    path : /users/moka/log/sb-redis.log
+    path : ./sbr.log

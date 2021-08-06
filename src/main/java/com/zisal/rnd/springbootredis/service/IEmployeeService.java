@@ -12,13 +12,15 @@ import java.util.List;
  */
 public interface IEmployeeService {
 
-    int insert(Employee employee);
+    EmployeeDTO insert(Employee employee);
 
-    int update(Employee employee, Integer id);
+    EmployeeDTO update(Employee employee, Integer id);
 
-    int delete(Integer id);
+    void delete(Integer id);
 
     List<Employee> findAll();
+
+    EmployeeDTO findById(Integer id);
 
     List<EmployeeDTO> findAllRedis();
 }
